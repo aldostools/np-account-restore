@@ -1,0 +1,95 @@
+# np-real-sign-in
+
+Sign in to your real PSN account on a jailbroken PS4/PS5. This payload restores authentic `config.dat` and `auth.dat` from a legitimately signed-in console, writing the account configuration to the system registry so you can use your real PSN account.
+
+## Requirements
+
+- A **source console** that is signed in to PSN and activated (latest firmware retail console, testkit, or devkit)
+- A **target console** on lower firmware with a jailbreak
+- A way to send ELF payloads to the target console (e.g. netcat, payload sender)
+
+## Step 1: Extract files from the source console
+
+On your signed-in, activated source console, locate these two files:
+
+```
+/system_data/priv/home/<userid>/config.dat
+/system_data/priv/home/<userid>/np/auth.dat
+```
+
+`<userid>` is the hex user ID of the signed-in account (e.g. `10000000`).
+
+You can extract these via FTP on a jailbroken source console, or by any other method that gives you access to the filesystem.
+
+## Step 2: Create a system backup on the source console
+
+On the **source console**, create a full system backup via **Settings > System > Back Up and Restore > Back Up PS4/PS5**.
+
+This backup contains the activation state needed for the target console.
+
+## Step 3: Restore the backup on the target console
+
+Restore the system backup onto your **lower firmware jailbroken target console** via **Settings > System > Back Up and Restore > Restore PS4/PS5**.
+
+This transfers the **activation state** to the target console.
+
+## Step 4: Copy config.dat and auth.dat to the target console
+
+After restoring the backup and jailbreaking (if needed), copy the files you extracted in Step 1 to the target console via FTP:
+
+```
+/system_data/priv/home/<userid>/config.dat
+/system_data/priv/home/<userid>/np/auth.dat
+```
+
+Make sure `<userid>` matches the user ID on the target console.
+
+## Step 5: Send the payload
+
+Send the appropriate ELF payload to the target console:
+
+- **PS4:** `bin/np-restore-account-ps4.elf`
+- **PS5:** `bin/np-restore-account-ps5.elf`
+
+```bash
+# Example using netcat
+nc <console-ip> 9021 < bin/np-restore-account-ps4.elf
+```
+
+The payload reads `config.dat` for the foreground user and writes all account fields (username, online ID, account ID, email, country, language, etc.) to the system registry.
+
+## Step 6: Reboot
+
+Reboot the console. After reboot, you will be signed in to your real PSN account.
+
+## Building from source
+
+Requires the [PS4 Payload SDK](https://github.com/ps4-payload-dev/pacbrew-packages) or [PS5 Payload SDK](https://github.com/ps5-payload-dev/sdk).
+
+```bash
+# Build both PS4 and PS5 ELFs
+make
+
+# Build PS4 only
+make build-ps4
+
+# Build PS5 only
+make build-ps5
+
+# Clean
+make clean
+```
+
+## How it works
+
+The payload:
+
+1. Identifies the foreground user on the console
+2. Reads `/system_data/priv/home/<userid>/config.dat`
+3. Parses all account fields (username, account ID, email, online ID, NP environment, country, language, locale, and various flags)
+4. Writes every field verbatim to the system registry via `sceRegMgrSet*`
+5. No patching or modification — it purely copies existing `config.dat` data to the registry
+
+## Credits
+
+By **earthonion**
