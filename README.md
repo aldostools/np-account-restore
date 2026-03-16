@@ -105,7 +105,7 @@ No. This tool does not perform account activation. It only restores account data
 No. Online play is not possible with this tool.
 
 **What does this tool actually do?**
-It simply restores an account that was signed in on one console to another. It copies the account configuration from `config.dat` into the system registry so the target console recognizes the account.
+It simply restores an account that was signed in on one console to another. It copies the account configuration from `config.dat` into the system registry so the target console recognizes the account. This is no different than logging in to your console normally and choosing not to update in order to maintain jailbreak status.
 
 ## Credits
 
