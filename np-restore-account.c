@@ -3,6 +3,7 @@
  * Reads config.dat from disk and restores all fields to the registry verbatim.
  * No patching or modification - purely copies existing config.dat data.
  * Requires offline activation via offact (https://github.com/ps5-payload-dev/offact)
+ * or already activated console
  */
 
 #include <stdint.h>
